@@ -1,0 +1,81 @@
+name: Deploy Docusaurus site to GitHub Pages
+
+# Workflow goal: build the static site, publish it to GitHub Pages with
+# zero-downtime, then perform optional cleanup of old deployment records.
+# Recommended sequence for zero-downtime: build -> deploy -> cleanup.
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    name: Build Website
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          # Use the Node version specified in package.json
+          node-version-file: package.json
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run npm build
+        run: |
+          npm run build
+
+      - name: Upload Artifacts
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build
+
+  cleanup:
+    name: Cleanup previous deployment
+    # Run this AFTER a successful deploy to avoid any window where the
+    # published Pages site has been removed but not yet republished.
+    # This ensures zero-downtime: build -> deploy -> cleanup.
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      deployments: write
+
+    steps:
+      - name: Delete deployment
+        uses: strumwolf/delete-deployment-environment@v3
+        with:
+          # Using the repository's GITHUB_TOKEN is sufficient when the job
+          # has `deployments: write` permission. This action by default
+          # removes deployment records; with `onlyRemoveDeployments: true`
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: github-pages
+          onlyRemoveDeployments: true
+
+  deploy:
+    name: Deploy Website
+    # Deploy only depends on the build. We publish the new artifact first
+    # so the live site is updated before removing any historical deployment
+    # records (cleanup runs after deploy). This ordering avoids downtime.
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

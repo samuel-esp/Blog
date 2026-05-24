@@ -1,0 +1,38 @@
+name: Validate Website Build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+  workflow_run:
+    workflows: ["Pre-commit Lint Checks"]
+    types: [completed]
+
+jobs:
+  build:
+    name: Test Build Website
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: "package.json"
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run npm build
+        run: |
+          npm run build

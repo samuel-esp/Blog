@@ -1,0 +1,5 @@
+# Allow all bots
+User-agent: *
+Allow: /
+Sitemap: https://samuel-esposito.dev/sitemap.xml
+

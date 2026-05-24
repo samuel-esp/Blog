@@ -1,0 +1,192 @@
+/**
+ * CSS files with the .module.css suffix will be treated as CSS modules
+ * and scoped locally.
+ */
+
+.heroContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Reserve space for navbar + footer to keep footer visible on desktop */
+  min-height: calc(100vh - var(--ifm-navbar-height) - 110px);
+  padding: 2rem;
+}
+
+.heroContent {
+  text-align: center;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.profileImage {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  animation: fadeDown 0.6s ease-out forwards;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+  animation: fadeDown 0.6s ease-out forwards;
+}
+
+.tagline {
+  font-size: 1.3rem;
+  color: #707075;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  animation: fadeDown 0.6s ease-out forwards;
+}
+
+.expertiseDescription {
+  font-size: 1rem;
+  color: #86868b;
+  margin: 0;
+  line-height: 1.6;
+  max-width: 550px;
+  font-weight: 400;
+  animation: fadeDown 0.6s ease-out forwards;
+}
+
+[data-theme='dark'] .tagline {
+  color: #86868b;
+}
+
+[data-theme='dark'] .expertiseDescription {
+  color: #6e6e73;
+}
+
+.socialLinks {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.socialIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: transparent;
+  color: #666666;
+  border: 1.5px solid #999999;
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  animation: fadeDown 0.6s ease-out forwards;
+}
+
+.socialIcon:hover {
+  color: #1a1a1a;
+  border-color: #1a1a1a;
+  transform: scale(1.1);
+}
+
+[data-theme='dark'] .socialIcon {
+  color: #9a9a9a;
+  border: 1.5px solid #666666;
+}
+
+[data-theme='dark'] .socialIcon:hover {
+  color: #e0e0e0;
+  border-color: #e0e0e0;
+  transform: scale(1.1);
+}
+
+.resumeButton {
+  display: inline-block;
+  margin-top: 2.5rem;
+  padding: 0.7rem 2rem;
+  background-color: #333333;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 980px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  border: 1.5px solid #333333;
+  animation: fadeDown 0.6s ease-out forwards;
+}
+
+.resumeButton:hover {
+  background-color: #1a1a1a;
+  border-color: #1a1a1a;
+  transform: scale(1.04);
+}
+
+[data-theme='dark'] .resumeButton {
+  background-color: #e0e0e0;
+  color: #1a1a1a;
+  border: 1.5px solid #e0e0e0;
+}
+
+[data-theme='dark'] .resumeButton:hover {
+  background-color: #ffffff;
+  border-color: #ffffff;
+  color: #1a1a1a;
+  transform: scale(1.04);
+}
+
+
+@media screen and (max-width: 996px) {
+  .heroContainer {
+    min-height: auto;
+    padding: 3rem 1rem;
+  }
+
+  .profileImage {
+    width: 150px;
+    height: 150px;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+
+  .tagline {
+    font-size: 1.1rem;
+  }
+
+  .socialLinks {
+    gap: 1rem;
+  }
+
+  .socialIcon {
+    width: 45px;
+    height: 45px;
+  }
+
+  .expertiseDescription {
+    font-size: 0.95rem;
+  }
+
+  .resumeButton {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

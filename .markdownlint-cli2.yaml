@@ -1,0 +1,13 @@
+config:
+  no-inline-html: false
+  line-length:
+    line_length: 140
+    tables: false
+  single-title:
+    front_matter_title: ""
+  first-line-heading: false
+  no-space-in-emphasis: false
+  code-block-style: false
+customRules:
+  - markdownlint-sentences-per-line
+  - "@jonathan-mayer/markdownlint-rule-titlecase"

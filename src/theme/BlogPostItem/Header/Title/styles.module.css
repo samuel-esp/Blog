@@ -1,0 +1,32 @@
+.title {
+  line-height: 1.2;
+}
+
+:global(.blog-post-page) .title {
+  font-size: 2.5rem;
+}
+
+:global(.blog-list-page) .title {
+  font-size: 1.9rem;
+  margin-bottom: 0.8rem;
+}
+
+:global(.blog-list-page) .title a {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/**
+  Blog post title should be smaller on smaller devices
+**/
+@media (max-width: 576px) {
+  :global(.blog-post-page) .title {
+    font-size: 2rem;
+  }
+
+  :global(.blog-list-page) .title {
+    font-size: 1.5rem;
+  }
+}
