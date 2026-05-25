@@ -155,7 +155,8 @@ Setting this as a multiple of 1000 (e.g., 1000m = 1 vCPU,
 The `concurrency`
 parameter controls how many requests the proxy can handle concurrently.
 Misconfiguring this parameter can
-increase memory usage and may lead to OOM kills. If your Ingress Gateway experiences OOM kills while idle,
+increase memory usage and may lead to OOM kills.
+If your Ingress Gateway experiences OOM kills while idle,
 this is one possible root cause worth investigating, but generally I would always double-check this parameter is set
 correctly
 
