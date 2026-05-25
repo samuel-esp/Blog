@@ -171,18 +171,10 @@ For example, if you set a CPU limit of 2000m (2 vCPUs), you can set concurrency 
 **Concurrency Rule:**
 
 ```math
-concurrency\le istio\_proxy\_cpu\_limit\;
+concurrency\le istio\_proxy\_cpu\_limit\_VCPU\;
 ```
 
-```math
-concurrency \in \{1,2,3,\dots\}, \quad istio\_proxy\_cpu\_limit =
-\begin{cases}
-1 & \text{if CPULimit is } 1000m, \\
-2 & \text{if CPULimit is } 2000m, \\
-3 & \text{if CPULimit is } 3000m, \\
-\vdots
-\end{cases}
-```
+For example if you set a CPU limit of 2000m (2 vCPUs), you can set concurrency to 1 or 2.
 
 To modify the `concurrency` value, you can define a `ProxyConfig` object for the Ingress Gateway.
 
@@ -370,18 +362,10 @@ The `CPULimit` value is the upper bound for optimal concurrency and should be a 
 **Concurrency Rule:**
 
 ```math
-concurrency\le istio\_proxy\_cpu\_limit\;
+concurrency\le istio\_proxy\_cpu\_limit\_VCPU\;
 ```
 
-```math
-concurrency \in \{1,2,3,\dots\}, \quad istio\_proxy\_cpu\_limit =
-\begin{cases}
-1 & \text{if CPULimit is } 1000m, \\
-2 & \text{if CPULimit is } 2000m, \\
-3 & \text{if CPULimit is } 3000m, \\
-\vdots
-\end{cases}
-```
+So, as we have seen above, if you set a CPU limit of 2000m (2 vCPUs), you can set concurrency to 1 or 2.
 
 For workloads, you can set the concurrency value using either of these methods:
 
