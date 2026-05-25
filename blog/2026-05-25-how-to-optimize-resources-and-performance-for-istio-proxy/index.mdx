@@ -98,8 +98,8 @@ in Istiod.
 
 If this variable is not present or set to `false`, each Ingress Gateway will receive configurations for all Virtual Services defined
 in the cluster, even those that are not relevant to the workloads served by that Ingress Gateway.
-This can lead to a large amount of useless configuration being pushed to the proxy, which can subsequently lead to increased memory
-consumption, especially in larger clusters with many services and complex routing configurations.
+This default behavior can lead to a large amount of useless configuration being pushed to the proxy, which can subsequently lead to
+increased memory consumption, especially in larger clusters with many services and complex routing configurations.
 
 Setting this environment variable explicitly to `true` allows the Ingress Gateway to only receive configurations relevant to the
 workloads it serves, which can significantly reduce the memory usage.
@@ -130,7 +130,8 @@ outbound|80||service-b.default.svc.cluster.local           EDS
 Once the pilot is configured to filter the configuration for the Ingress Gateway, we can start optimizing the resource usage
 of the proxy itself.
 
-When configuring the Istio Ingress Gateway, it's important to assign appropriate CPU and memory resources.
+When configuring the Istio Ingress Gateway, it's important to assign appropriate CPU and memory resources because even a small
+misconfiguration can cause huge problems.
 Since the Ingress Gateway pod typically contains only the Istio Proxy container, all assigned resources are
 dedicated to it.
 
@@ -154,7 +155,9 @@ Setting this as a multiple of 1000 (e.g., 1000m = 1 vCPU,
 The `concurrency`
 parameter controls how many requests the proxy can handle concurrently.
 Misconfiguring this parameter can
-increase memory usage and may lead to OOM kills.
+increase memory usage and may lead to OOM kills. If your Ingress Gateway experiences OOM kills while idle,
+this is one possible root cause worth investigating, but generally I would always double-check this parameter is set
+correctly
 
 You can verify the `concurrency` parameter by running the following command inside the Ingress Gateway container:
 
@@ -162,7 +165,7 @@ You can verify the `concurrency` parameter by running the following command insi
 curl localhost:15000/server_info | grep concurrency
 ```
 
-Generally, you must ensure that the `concurrency` value is less than or equal to the CPU limit (in vCPUs) assigned to the proxy.
+You must ensure that the `concurrency` value is less than or equal to the CPU limit (in vCPUs) assigned to the proxy.
 For example, if you set a CPU limit of 2000m (2 vCPUs), you can set concurrency to 1 or 2.
 
 **Concurrency Rule:**
@@ -204,8 +207,8 @@ Similar to what we saw earlier in the Ingress Gateway section, sidecar proxies b
 Services, Destination Rules, and Service Entries for all workloads in the cluster, including those not served by that proxy.
 Istio helps address this problem with the `Sidecar` resource, which can be enabled globally, per-namespace, or
 for individual workloads.
-At this point, for those wondering, the `Sidecar` resource unfortunately does not apply to Ingress Gateways
-as it is designed specifically for sidecar proxies; in this case, the Ingress Gateway is treated a special proxy, and it is not affected
+For those wondering, the `Sidecar` resource unfortunately does not apply to Ingress Gateways
+as it is designed specifically for sidecar proxies; the Ingress Gateway is treated a special proxy, and it is not affected
 by the `Sidecar` resource.
 
 If you are running a multi-tenant cluster, where each namespace is virtually independent and serves different applications,
@@ -490,7 +493,10 @@ spec:
 Instead, it is recommended to define separate scaling targets for the application and the Istio Proxy containers.
 For example, you might set a CPU target for the proxy (e.g., 50-60%) and both CPU and memory targets for the application container.
 This HPA configuration leverages
-[ContainerResourceMetrics](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/#container-resource-metrics)
+[ContainerResourceMetrics](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/#container-resource-metrics).
+Based on my experience the CPU should be the primary (or even the only) scaling signal of the `istio-proxy`;
+memory usage is influenced not only by runtime factors, but also by the amount and complexity of the configuration loaded into the proxy.
+My advice regarding memory would be to prefer fine-tuning the requests and limits rather than using memory as a scaling signal
 
 ```yaml
 apiVersion: autoscaling/v2
