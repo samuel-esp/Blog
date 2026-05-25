@@ -17,7 +17,7 @@ import {
 const config: Config = {
   title: 'Samuel Esposito',
   tagline: 'Cloud Engineer | Platform Engineer | Kubernetes',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon-32x32.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {

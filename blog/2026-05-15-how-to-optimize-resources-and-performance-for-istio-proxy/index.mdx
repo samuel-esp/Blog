@@ -49,6 +49,8 @@ are based on the Envoy proxy and are often referred to as **_Istio Proxy_**, **_
 They enforce the configurations from the control plane and enable features like traffic
 management, security policies, and observability.
 
+![Istio Architecture Diagram](./istio.png)
+
 _Note: The image above shows a typical data plane setup, where each pod contains both a microservice
 container and an Istio Proxy sidecar.
 The Ingress Gateway pod is an exception, as it usually contains only
@@ -56,7 +58,8 @@ the Istio Proxy container to handle incoming traffic._
 
 ## Istio Data Plane Performance and Scalability
 
-While Istio offers powerful capabilities to developers, tuning its resource usage can be quite complex.
+While Istio offers powerful capabilities to developers, tuning its resource usage can be quite complex. The most difficult
+part of running Istio in large production environments, in my opinion, is optimizing the memory usage.
 
 According to the
 [Istio documentation](https://istio.io/latest/docs/ops/deployment/performance-and-scalability/#sidecar-and-ztunnel-resource-usage),
@@ -75,11 +78,9 @@ As noted in the documentation, these numbers can vary significantly due to sever
   The more configuration the proxy has to handle, the more memory it will consume.
 - Whether telemetry and monitoring filters are enabled
 
-Run targeted stress tests (start at 100 RPS and scale up) to determine the CPU and memory points where latency or errors increase.
-
 In the next sections, you'll learn how to optimize resource usage for both the Istio Ingress Gateway and sidecar proxies.
-These
-optimizations can be considered as a starting point that you can further adjust based on your specific workload and traffic patterns.
+These optimizations can be considered as a starting point that you can further adjust based on your specific workload
+and traffic patterns.
 
 ## Optimizing Memory Usage for Istio Ingress Gateway
 
@@ -90,28 +91,31 @@ When adopting Istio, cluster administrators often choose one of these two approa
 - **Dedicated Ingress Gateways:** each namespace has its own Ingress Gateway, which is only responsible for serving the workloads
   in that namespace, this is a common approach for multi-tenant clusters.
 
-Whether you have a shared or dedicated Ingress Gateway, the first thing to check is this environment variable in Istiod:
+Whether you have a shared or dedicated Ingress Gateway, the first thing to check is the presence of the environment variable
+named
+[`PILOT_FILTER_GATEWAY_CLUSTER_CONFIG`](https://istio.io/latest/docs/reference/commands/pilot-agent/#pilot-filter-gateway-cluster-config)
+in Istiod.
+
+If this variable is not present or set to `false`, each Ingress Gateway will receive configurations for all Virtual Services defined
+in the cluster, even those that are not relevant to the workloads served by that Ingress Gateway.
+This can lead to a large amount of useless configuration being pushed to the proxy, which can subsequently lead to increased memory
+consumption, especially in larger clusters with many services and complex routing configurations.
+
+Setting this environment variable explicitly to `true` allows the Ingress Gateway to only receive configurations relevant to the
+workloads it serves, which can significantly reduce the memory usage.
 
 ```bash
 PILOT_FILTER_GATEWAY_CLUSTER_CONFIG=true
 ```
 
-This subtle configuration allows the Ingress Gateway to only receive the configuration relevant to the workloads it serves,
-which can significantly reduce the resource usage of the proxy and improve performance.
-
-If this variable is not set, the Ingress Gateway will receive routing configuration for all cluster workloads that
-define a VirtualService, DestinationRule, or ServiceEntry—even those not relevant to the gateway.
-This can lead to a large amount of configuration being pushed to the proxy, which can lead to increased memory consumption,
-especially in larger clusters with many services and complex configurations.
-
-You can compare the before-and-after configuration by running the following command to see how many clusters
-(services) the Ingress Gateway is configured to handle:
+You can compare the before-and-after by running the following command to see how many clusters the Ingress Gateway is
+configured to handle:
 
 ```bash
 istioctl proxy-config clusters <ingress-gateway-pod-name> -n <namespace>
 ```
 
-Before and after enabling the `PILOT_FILTER_GATEWAY_CLUSTER_CONFIG` variable,
+After setting `PILOT_FILTER_GATEWAY_CLUSTER_CONFIG=true` variable (and restarting your Ingress Gateway pod),
 you should see a significant reduction in the number of clusters.
 
 ```bash
@@ -199,7 +203,9 @@ After completing these optimizations you should see a significant improvement in
 Similar to what we saw earlier in the Ingress Gateway section, sidecar proxies by default store the configuration of Virtual
 Services, Destination Rules, and Service Entries for all workloads in the cluster, including those not served by that proxy.
 Istio helps address this problem with the `Sidecar` resource, which can be enabled globally, per-namespace, or
-for individual workloads.
+for individual workloads. At this point, for those wondering, the `Sidecar` resource unfortunately does not apply to Ingress Gateways
+as it is designed specifically for sidecar proxies; in this case, the Ingress Gateway is treated a special proxy, and it is not affected
+by the `Sidecar` resource.
 
 If you are running a multi-tenant cluster, where each namespace is virtually independent and serves different applications,
 it's recommended to enable the `Sidecar` resource at the namespace level, like in the example below:
@@ -288,6 +294,7 @@ Usually
 the default values are:
 
 ```json
+{
   "resources": {
     "limits": {
       "cpu": "1000m",
@@ -298,6 +305,7 @@ the default values are:
       "memory": "128Mi"
     }
   }
+}
 ```
 
 The global configuration will be injected into all sidecar proxies by default, but it can be overridden on a per-pod basis.

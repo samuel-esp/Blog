@@ -24,7 +24,14 @@ function HomepageHeader() {
         <p className={styles.tagline}>{siteConfig.tagline}</p>
         <p className={styles.expertiseDescription}>
           Experienced in operating Kubernetes platforms at 20k+ microservices scale, focused on resilience, automation, and cost efficiency.<br />
-          GoKubeDownscaler maintainer.
+          <a
+              href="https://kube-downscaler.io"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="kube-downscaler.io"
+          >
+            GoKubeDownscaler maintainer.
+          </a>
         </p>
 
         <div className={styles.socialLinks}>
