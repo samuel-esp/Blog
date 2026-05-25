@@ -3,10 +3,9 @@
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/samuel-esp/blog/deploy.yml?label=Build)
 ![GitHub last commit](https://img.shields.io/github/last-commit/samuel-esp/blog)
 
-
 Welcome to my **Blog**, where I share insights on Cloud Engineering, Platform Engineering and Kubernetes.
 
-https://samuel-esposito.dev
+<https://samuel-esposito.dev>
 
 ---
 

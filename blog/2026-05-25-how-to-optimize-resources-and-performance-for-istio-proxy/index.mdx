@@ -203,7 +203,8 @@ After completing these optimizations you should see a significant improvement in
 Similar to what we saw earlier in the Ingress Gateway section, sidecar proxies by default store the configuration of Virtual
 Services, Destination Rules, and Service Entries for all workloads in the cluster, including those not served by that proxy.
 Istio helps address this problem with the `Sidecar` resource, which can be enabled globally, per-namespace, or
-for individual workloads. At this point, for those wondering, the `Sidecar` resource unfortunately does not apply to Ingress Gateways
+for individual workloads.
+At this point, for those wondering, the `Sidecar` resource unfortunately does not apply to Ingress Gateways
 as it is designed specifically for sidecar proxies; in this case, the Ingress Gateway is treated a special proxy, and it is not affected
 by the `Sidecar` resource.
 
