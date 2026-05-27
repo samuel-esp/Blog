@@ -91,6 +91,8 @@ const config: Config = {
             "/blog/archive",
             "/blog/tags/**",
             "/blog/authors/**",
+            "/docs/tags",
+            "/docs/tags/**",
             "/markdown-page"
           ],
           filename: 'sitemap.xml',
