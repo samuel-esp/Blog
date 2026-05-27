@@ -86,10 +86,12 @@ const config: Config = {
           changefreq: 'weekly',
           priority: 0.8,
           ignorePatterns: [
-            "blog/tags",
-            "blog/tags/**",
-            "blog/archive",
-            "blog/tags/**",
+            "/blog/tags",
+            "/blog/tags/**",
+            "/blog/archive",
+            "/blog/tags/**",
+            "/blog/authors/**",
+            "/markdown-page"
           ],
           filename: 'sitemap.xml',
         },
@@ -173,6 +175,15 @@ const config: Config = {
     },
   } satisfies Preset.ThemeConfig,
   headTags: [
+    {
+      tagName: "link",
+      attributes: {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/img/favicon-32x32.png",
+      },
+    },
     // Global Open Graph tags
     {
       tagName: 'meta',
